@@ -31,3 +31,6 @@ group :test do
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+
+gem 'httparty', '~> 0.20.0'
+gem 'whenever', '~> 1.0', require: false
