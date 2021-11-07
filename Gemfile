@@ -33,4 +33,5 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'httparty', '~> 0.20.0'
+gem 'jsonapi-serializer', '~> 2.2'
 gem 'whenever', '~> 1.0', require: false
