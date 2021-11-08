@@ -4,6 +4,8 @@ class UserLocation < ApplicationRecord
   # Relationship
   belongs_to :user
 
-  has_one :user_location_coordinate, dependent: :delete
-  has_one :user_location_timezone, dependent: :delete
+  has_one :coordinates, dependent: :delete, class_name: 'UserLocationCoordinate'
+  has_one :timezone, dependent: :delete, class_name: 'UserLocationTimezone'
+
+  accepts_nested_attributes_for :coordinates, :timezone
 end

@@ -2,5 +2,5 @@
 
 class UserLocationTimezone < ApplicationRecord
   # Relationship
-  belongs_to :user_location
+  belongs_to :location, class_name: 'UserLocation', optional: true
 end
