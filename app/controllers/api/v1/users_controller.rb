@@ -6,7 +6,7 @@ module Api
       before_action :load_user, only: %i[show update destroy]
 
       def index
-        @users = User.order(created_at: :desc).limit 1
+        @users = User.order(created_at: :desc)
         render json: serialized_data(@users), status: :ok
       end
 
