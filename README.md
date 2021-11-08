@@ -1,24 +1,30 @@
-# README
+# Pharma Inc API - Challenge by Coodesh
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Sobre
 
-Things you may want to cover:
+Sistema reponsável por buscar os dados de usuários na [Random User](https://randomuser.me/documentation#format) uma vez ao dia. Nela é possível, após o registro no banco, fazer modificações nos mesmos.
 
-* Ruby version
+## Tecnologias usadas
 
-* System dependencies
+* Ruby 3.0.2
+* Rails 6.1.4.1
+* PostgreSQL
+* Docker
 
-* Configuration
+## Como executar o projeto
 
-* Database creation
+Faça o clone do repositório e com Docker e Docker Compose instalados, execute no diretório raíz do projeto:
 
-* Database initialization
+* `docker-compose build` para criar as imagens necessárias
+* `docker-compose run web bash` para acessar o `shell` do container já com a aplicação instalada
 
-* How to run the test suite
+Dentro desse `shell` você deve configurar o banco de dados antes de executar
+outros comandos. Para isso execute:
 
-* Services (job queues, cache servers, search engines, etc.)
+`rails db:create db:migrate`
 
-* Deployment instructions
+Agora você pode sair do container e executar o seguinte comando:
 
-* ...
+`docker-compose up`
+
+O servidor estará rodando em [localhost:3000](http://localhost:3000)
