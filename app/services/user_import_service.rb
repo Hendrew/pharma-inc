@@ -9,13 +9,11 @@ class UserImportService < ApplicationService
     users_by_page = 100
     maximum_pages = 20
 
-    loop do
+    while current_page <= maximum_pages
       results = fetch_users(current_page, users_by_page)
       next if results == false
 
       save_data(results)
-
-      break if current_page == maximum_pages
 
       current_page += 1
     end
@@ -41,17 +39,17 @@ class UserImportService < ApplicationService
   end
 
   def save_personal_data(result, user)
-    save_user_name(get_user_name_params(result['name']), user)
-    save_user_location(get_user_location_params(result['location']), user, result['location']['coordinates'],
-                       result['location']['timezone'])
-    save_user_picture(get_user_picture_params(result['picture']), user)
+    save_name(get_name_params(result['name']), user)
+    save_location(get_location_params(result['location']), user, result['location']['coordinates'],
+                  result['location']['timezone'])
+    save_picture(get_picture_params(result['picture']), user)
   end
 
   def save_access_data(result, user)
-    save_user_login(get_user_login_params(result['login']), user)
-    save_user_dob(get_user_dob_params(result['dob']), user)
-    save_user_registered(get_user_registered_params(result['registered']), user)
-    save_user_id(get_user_id_params(result['id']), user)
+    save_login(get_login_params(result['login']), user)
+    save_dob(get_dob_params(result['dob']), user)
+    save_registered(get_registered_params(result['registered']), user)
+    save_id(get_id_params(result['id']), user)
   end
 
   def save_user(user_params)
@@ -59,42 +57,42 @@ class UserImportService < ApplicationService
     user.persisted? ? user : false
   end
 
-  def save_user_name(user_name_params, user)
-    UserName.create(user_name_params.merge(user: user))
+  def save_name(name_params, user)
+    UserName.create(name_params.merge(user: user))
   end
 
-  def save_user_location(user_location_params, user, coordinates_result, timezone_result)
-    user_location = UserLocation.create(user_location_params.merge(user: user))
-    save_user_location_coordinates(get_user_location_coordinates_params(coordinates_result), user_location)
-    save_user_location_timezone(get_user_location_timezone_params(timezone_result), user_location)
+  def save_location(location_params, user, coordinates_result, timezone_result)
+    location = UserLocation.create(location_params.merge(user: user))
+    save_coordinates(get_coordinates_params(coordinates_result), location)
+    save_timezone(get_timezone_params(timezone_result), location)
   end
 
-  def save_user_location_coordinates(user_location_coordinates_params, user_location)
-    UserLocationCoordinate.create(user_location_coordinates_params.merge(user_location: user_location))
+  def save_coordinates(coordinates_params, location)
+    UserLocationCoordinate.create(coordinates_params.merge(user_location_id: location.id))
   end
 
-  def save_user_location_timezone(user_location_timezone_params, user_location)
-    UserLocationTimezone.create(user_location_timezone_params.merge(user_location: user_location))
+  def save_timezone(timezone_params, location)
+    UserLocationTimezone.create(timezone_params.merge(user_location_id: location.id))
   end
 
-  def save_user_login(user_login_params, user)
-    UserLogin.create(user_login_params.merge(user: user))
+  def save_login(login_params, user)
+    UserLogin.create(login_params.merge(user: user))
   end
 
-  def save_user_dob(user_dob_params, user)
-    UserDob.create(user_dob_params.merge(user: user))
+  def save_dob(dob_params, user)
+    UserDob.create(dob_params.merge(user: user))
   end
 
-  def save_user_registered(user_registered_params, user)
-    UserRegistered.create(user_registered_params.merge(user: user))
+  def save_registered(registered_params, user)
+    UserRegistered.create(registered_params.merge(user: user))
   end
 
-  def save_user_id(user_id_params, user)
-    UserId.create(user_id_params.merge(user: user))
+  def save_id(id_params, user)
+    UserId.create(id_params.merge(user: user))
   end
 
-  def save_user_picture(user_picture_params, user)
-    UserPicture.create(user_picture_params.merge(user: user))
+  def save_picture(picture_params, user)
+    UserPicture.create(picture_params.merge(user: user))
   end
 
   def get_user_params(result)
@@ -109,75 +107,75 @@ class UserImportService < ApplicationService
     user_params
   end
 
-  def get_user_name_params(result)
-    user_name_params = {}
-    user_name_params.store('title', result['title'])
-    user_name_params.store('first', result['first'])
-    user_name_params.store('last', result['last'])
-    user_name_params
+  def get_name_params(result)
+    name_params = {}
+    name_params.store('title', result['title'])
+    name_params.store('first', result['first'])
+    name_params.store('last', result['last'])
+    name_params
   end
 
-  def get_user_location_params(result)
-    user_location_params = {}
-    user_location_params.store('street', result['street'].values.join(' '))
-    user_location_params.store('city', result['city'])
-    user_location_params.store('state', result['state'])
-    user_location_params.store('postcode', result['postcode'])
-    user_location_params
+  def get_location_params(result)
+    location_params = {}
+    location_params.store('street', result['street'].values.join(' '))
+    location_params.store('city', result['city'])
+    location_params.store('state', result['state'])
+    location_params.store('postcode', result['postcode'])
+    location_params
   end
 
-  def get_user_location_coordinates_params(result)
-    user_location_coordinates_params = {}
-    user_location_coordinates_params.store('latitude', result['latitude'])
-    user_location_coordinates_params.store('longitude', result['longitude'])
-    user_location_coordinates_params
+  def get_coordinates_params(result)
+    coordinates_params = {}
+    coordinates_params.store('latitude', result['latitude'])
+    coordinates_params.store('longitude', result['longitude'])
+    coordinates_params
   end
 
-  def get_user_location_timezone_params(result)
-    user_location_timezone_params = {}
-    user_location_timezone_params.store('offset', result['offset'])
-    user_location_timezone_params.store('description', result['description'])
-    user_location_timezone_params
+  def get_timezone_params(result)
+    timezone_params = {}
+    timezone_params.store('offset', result['offset'])
+    timezone_params.store('description', result['description'])
+    timezone_params
   end
 
-  def get_user_login_params(result)
-    user_login_params = {}
-    user_login_params.store('uuid', result['uuid'])
-    user_login_params.store('username', result['username'])
-    user_login_params.store('password', result['password'])
-    user_login_params.store('salt', result['salt'])
-    user_login_params.store('md5', result['md5'])
-    user_login_params.store('sha1', result['sha1'])
-    user_login_params.store('sha256', result['sha256'])
-    user_login_params
+  def get_login_params(result)
+    login_params = {}
+    login_params.store('uuid', result['uuid'])
+    login_params.store('username', result['username'])
+    login_params.store('password', result['password'])
+    login_params.store('salt', result['salt'])
+    login_params.store('md5', result['md5'])
+    login_params.store('sha1', result['sha1'])
+    login_params.store('sha256', result['sha256'])
+    login_params
   end
 
-  def get_user_dob_params(result)
-    user_dob_params = {}
-    user_dob_params.store('date', result['date'])
-    user_dob_params.store('age', result['age'])
-    user_dob_params
+  def get_dob_params(result)
+    dob_params = {}
+    dob_params.store('date', result['date'])
+    dob_params.store('age', result['age'])
+    dob_params
   end
 
-  def get_user_registered_params(result)
-    user_registered_params = {}
-    user_registered_params.store('date', result['date'])
-    user_registered_params.store('age', result['age'])
-    user_registered_params
+  def get_registered_params(result)
+    registered_params = {}
+    registered_params.store('date', result['date'])
+    registered_params.store('age', result['age'])
+    registered_params
   end
 
-  def get_user_id_params(result)
-    user_id_params = {}
-    user_id_params.store('name', result['name'])
-    user_id_params.store('value', result['value'])
-    user_id_params
+  def get_id_params(result)
+    id_params = {}
+    id_params.store('name', result['name'])
+    id_params.store('value', result['value'])
+    id_params
   end
 
-  def get_user_picture_params(result)
-    user_picture_params = {}
-    user_picture_params.store('large', result['large'])
-    user_picture_params.store('medium', result['medium'])
-    user_picture_params.store('thumbnail', result['thumbnail'])
-    user_picture_params
+  def get_picture_params(result)
+    picture_params = {}
+    picture_params.store('large', result['large'])
+    picture_params.store('medium', result['medium'])
+    picture_params.store('thumbnail', result['thumbnail'])
+    picture_params
   end
 end
